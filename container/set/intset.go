@@ -10,36 +10,36 @@ func NewIntSet() *IntSet {
 	}
 }
 
-func (this *IntSet) Add(elt int) *IntSet {
-	this.M[elt] = struct{}{}
-	return this
+func (i *IntSet) Add(elt int) *IntSet {
+	i.M[elt] = struct{}{}
+	return i
 }
 
-func (this *IntSet) Exists(elt int) bool {
-	_, exists := this.M[elt]
+func (i *IntSet) Exists(elt int) bool {
+	_, exists := i.M[elt]
 	return exists
 }
 
-func (this *IntSet) Delete(elt int) {
-	delete(this.M, elt)
+func (i *IntSet) Delete(elt int) {
+	delete(i.M, elt)
 }
 
-func (this *IntSet) Clear() {
-	this.M = make(map[int]struct{})
+func (i *IntSet) Clear() {
+	i.M = make(map[int]struct{})
 }
 
-func (this *IntSet) ToSlice() []int {
-	count := len(this.M)
+func (i *IntSet) ToSlice() []int {
+	count := len(i.M)
 	if count == 0 {
 		return []int{}
 	}
 
 	r := make([]int, count)
 
-	i := 0
-	for elt := range this.M {
-		r[i] = elt
-		i++
+	j := 0
+	for elt := range i.M {
+		r[j] = elt
+		j++
 	}
 
 	return r

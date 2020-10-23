@@ -21,5 +21,5 @@ func ParseProtobuf(in io.Reader, groupLabels map[string]string) (*metrics.Metric
 		}
 		metricFamilies[mf.GetName()] = mf
 	}
-	return metricFamiliesForamt(metricFamilies, groupLabels)
+	return metricFamiliesFormat(metricFamilies, groupLabels)
 }

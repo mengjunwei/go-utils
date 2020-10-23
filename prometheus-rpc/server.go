@@ -21,7 +21,7 @@ func NewMetricsRpcServer(addr string) *MetricsRpcServer {
 func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 	transport, err := thrift.NewTServerSocket(s.addr)
 	if err != nil {
-		return errors.Wrapf(err, "NewTServerSocket")
+		return errors.Wrapf(err, "thrift.NewTServerSocket")
 	}
 
 	processor := metrics.NewMetricsTransferProcessor(&handler)
@@ -35,9 +35,9 @@ func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 		protocolFactory,
 	)
 
-	log.InfoF("MetricsRpcServer Serve:%s", s.addr)
+	log.InfoF("MetricsRpcServer addr:%s", s.addr)
 	if err := s.server.Serve(); err != nil {
-		return errors.Wrapf(err, "server.Serve()")
+		return errors.Wrapf(err, "s.server.Serve")
 	}
 
 	return nil
@@ -45,11 +45,9 @@ func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 
 func (s *MetricsRpcServer) Stop() error {
 	if s.server != nil {
-		s.server.Stop()
+		_ = s.server.Stop()
 		s.server = nil
-
 		log.Info("MetricsRpcServer Stop")
 	}
-
 	return nil
 }

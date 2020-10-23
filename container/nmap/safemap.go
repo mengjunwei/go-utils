@@ -15,80 +15,80 @@ func NewSafeMap() *SafeMap {
 	}
 }
 
-func (this *SafeMap) Put(key string, val interface{}) {
-	this.Lock()
-	this.M[key] = val
-	this.Unlock()
+func (s *SafeMap) Put(key string, val interface{}) {
+	s.Lock()
+	s.M[key] = val
+	s.Unlock()
 }
 
-func (this *SafeMap) Get(key string) (interface{}, bool) {
-	this.RLock()
-	val, exists := this.M[key]
-	this.RUnlock()
+func (s *SafeMap) Get(key string) (interface{}, bool) {
+	s.RLock()
+	val, exists := s.M[key]
+	s.RUnlock()
 	return val, exists
 }
 
-func (this *SafeMap) Remove(key string) {
-	this.Lock()
-	delete(this.M, key)
-	this.Unlock()
+func (s *SafeMap) Remove(key string) {
+	s.Lock()
+	delete(s.M, key)
+	s.Unlock()
 }
 
-func (this *SafeMap) GetAndRemove(key string) (interface{}, bool) {
-	this.Lock()
-	val, exists := this.M[key]
+func (s *SafeMap) GetAndRemove(key string) (interface{}, bool) {
+	s.Lock()
+	val, exists := s.M[key]
 	if exists {
-		delete(this.M, key)
+		delete(s.M, key)
 	}
-	this.Unlock()
+	s.Unlock()
 	return val, exists
 }
 
-func (this *SafeMap) Clear() {
-	this.Lock()
-	this.M = make(map[string]interface{})
-	this.Unlock()
+func (s *SafeMap) Clear() {
+	s.Lock()
+	s.M = make(map[string]interface{})
+	s.Unlock()
 }
 
-func (this *SafeMap) Keys() []string {
-	this.RLock()
-	defer this.RUnlock()
+func (s *SafeMap) Keys() []string {
+	s.RLock()
+	defer s.RUnlock()
 
 	keys := make([]string, 0)
-	for key, _ := range this.M {
+	for key, _ := range s.M {
 		keys = append(keys, key)
 	}
 	return keys
 }
 
-func (this *SafeMap) Slice() []interface{} {
-	this.RLock()
-	defer this.RUnlock()
+func (s *SafeMap) Slice() []interface{} {
+	s.RLock()
+	defer s.RUnlock()
 
-	vals := make([]interface{}, 0)
-	for _, val := range this.M {
-		vals = append(vals, val)
+	valS := make([]interface{}, 0)
+	for _, val := range s.M {
+		valS = append(valS, val)
 	}
-	return vals
+	return valS
 }
 
-func (this *SafeMap) ContainsKey(key string) bool {
-	this.RLock()
-	_, exists := this.M[key]
-	this.RUnlock()
+func (s *SafeMap) ContainsKey(key string) bool {
+	s.RLock()
+	_, exists := s.M[key]
+	s.RUnlock()
 	return exists
 }
 
-func (this *SafeMap) Size() int {
-	this.RLock()
-	len := len(this.M)
-	this.RUnlock()
-	return len
+func (s *SafeMap) Size() int {
+	s.RLock()
+	l := len(s.M)
+	s.RUnlock()
+	return l
 }
 
-func (this *SafeMap) IsEmpty() bool {
-	this.RLock()
-	empty := (len(this.M) == 0)
-	this.RUnlock()
+func (s *SafeMap) IsEmpty() bool {
+	s.RLock()
+	empty := len(s.M) == 0
+	s.RUnlock()
 	return empty
 }

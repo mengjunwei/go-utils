@@ -10,26 +10,26 @@ func NewStringSet() *StringSet {
 	}
 }
 
-func (this *StringSet) Add(elt string) *StringSet {
-	this.M[elt] = struct{}{}
-	return this
+func (ss *StringSet) Add(elt string) *StringSet {
+	ss.M[elt] = struct{}{}
+	return ss
 }
 
-func (this *StringSet) Exists(elt string) bool {
-	_, exists := this.M[elt]
+func (ss *StringSet) Exists(elt string) bool {
+	_, exists := ss.M[elt]
 	return exists
 }
 
-func (this *StringSet) Delete(elt string) {
-	delete(this.M, elt)
+func (ss *StringSet) Delete(elt string) {
+	delete(ss.M, elt)
 }
 
-func (this *StringSet) Clear() {
-	this.M = make(map[string]struct{})
+func (ss *StringSet) Clear() {
+	ss.M = make(map[string]struct{})
 }
 
-func (this *StringSet) ToSlice() []string {
-	count := len(this.M)
+func (ss *StringSet) ToSlice() []string {
+	count := len(ss.M)
 	if count == 0 {
 		return []string{}
 	}
@@ -37,7 +37,7 @@ func (this *StringSet) ToSlice() []string {
 	r := make([]string, count)
 
 	i := 0
-	for elt := range this.M {
+	for elt := range ss.M {
 		r[i] = elt
 		i++
 	}

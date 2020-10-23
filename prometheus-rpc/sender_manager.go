@@ -17,49 +17,47 @@ const (
 )
 
 type Status struct {
-	MetricAll    uint64
-	MetricSendOk uint64
+	MetricTotal uint64
+	MetricOk    uint64
 }
 
-type SendManager struct {
+type SenderManager struct {
 	sync.Mutex
-	addr     string
-	name     string
-	stopped  bool
-	parallel int
-	senders  []*Sender
-	index    uint64
-	status   Status
-
+	stopped    bool
+	parallel   int
+	rpcSenders []*Sender
+	index      uint64
+	status     Status
+	addr       string
+	name       string
 	HashAddr   []string
 	Datasource string
 }
 
-func NewSendManager(name, addr string) *SendManager {
+func NewSendManager(name, addr string) *SenderManager {
 	parallel := defaultParallel
 
-	m := &SendManager{
-		addr:     addr,
-		name:     name,
-		stopped:  true,
-		parallel: parallel,
-		senders:  make([]*Sender, parallel),
+	m := &SenderManager{
+		addr:       addr,
+		name:       name,
+		stopped:    true,
+		parallel:   parallel,
+		rpcSenders: make([]*Sender, parallel),
 	}
-	for i, _ := range m.senders {
-		m.senders[i] = NewSender(m, i, defaultFlushInterval, addr)
+	for i, _ := range m.rpcSenders {
+		m.rpcSenders[i] = NewSender(m, i, defaultFlushInterval, addr)
 	}
-
 	return m
 }
 
-func (m *SendManager) Run() error {
+func (m *SenderManager) Run() error {
 	m.Lock()
 	defer m.Unlock()
 	if !m.stopped {
 		return nil
 	}
 
-	for _, s := range m.senders {
+	for _, s := range m.rpcSenders {
 		s.Start()
 	}
 	m.stopped = false
@@ -68,14 +66,14 @@ func (m *SendManager) Run() error {
 	return nil
 }
 
-func (m *SendManager) Stop() error {
+func (m *SenderManager) Stop() error {
 	m.Lock()
 	defer m.Unlock()
 	if m.stopped {
 		return nil
 	}
 
-	for _, s := range m.senders {
+	for _, s := range m.rpcSenders {
 		s.Stop()
 	}
 	m.stopped = true
@@ -84,7 +82,7 @@ func (m *SendManager) Stop() error {
 	return nil
 }
 
-func (m *SendManager) ParseAndSend(typ int, body io.Reader, groupLabels map[string]string) error {
+func (m *SenderManager) ParseAndSend(typ int, body io.Reader, groupLabels map[string]string) error {
 	ms, err := parser.ParseMetrics(typ, body, groupLabels)
 	if err != nil {
 		return err
@@ -96,7 +94,7 @@ func (m *SendManager) ParseAndSend(typ int, body io.Reader, groupLabels map[stri
 	return err
 }
 
-func (m *SendManager) Parse(typ int, body io.Reader, groupLabels map[string]string) (*metrics.Metrics, error) {
+func (m *SenderManager) Parse(typ int, body io.Reader, groupLabels map[string]string) (*metrics.Metrics, error) {
 	ms, err := parser.ParseMetrics(typ, body, groupLabels)
 	if err != nil {
 		return nil, err
@@ -104,14 +102,14 @@ func (m *SendManager) Parse(typ int, body io.Reader, groupLabels map[string]stri
 	return ms, nil
 }
 
-func (m *SendManager) Send(ms *metrics.Metrics) error {
+func (m *SenderManager) Send(ms *metrics.Metrics) error {
 	var err error
 	c := len(ms.List)
 	if c == 0 {
 		return nil
 	}
 
-	m.metricStatus(uint64(c), 0)
+	m.atomicMetricStatus(uint64(c), 0)
 	if c <= batchNumbers {
 		return m.send(ms)
 	}
@@ -141,25 +139,23 @@ func (m *SendManager) Send(ms *metrics.Metrics) error {
 	return err
 }
 
-func (m *SendManager) send(ms *metrics.Metrics) error {
+func (m *SenderManager) send(ms *metrics.Metrics) error {
 	if len(ms.List) > 0 {
 		i := atomic.AddUint64(&m.index, 1) % uint64(m.parallel)
-		return m.senders[i].Send(ms)
+		return m.rpcSenders[i].Send(ms)
 	}
-
 	return nil
 }
 
-func (m *SendManager) metricStatus(received, send uint64) {
+func (m *SenderManager) atomicMetricStatus(received, send uint64) {
 	if received > 0 {
-		atomic.AddUint64(&m.status.MetricAll, received)
+		atomic.AddUint64(&m.status.MetricTotal, received)
 	}
-
 	if send > 0 {
-		atomic.AddUint64(&m.status.MetricSendOk, send)
+		atomic.AddUint64(&m.status.MetricOk, send)
 	}
 }
 
-func (m *SendManager) Status() (uint64, uint64) {
-	return atomic.LoadUint64(&m.status.MetricAll), atomic.LoadUint64(&m.status.MetricSendOk)
+func (m *SenderManager) Status() (uint64, uint64) {
+	return atomic.LoadUint64(&m.status.MetricTotal), atomic.LoadUint64(&m.status.MetricOk)
 }

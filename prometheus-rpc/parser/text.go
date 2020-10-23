@@ -43,5 +43,5 @@ func ParseText(in io.Reader, groupLabels map[string]string) (*metrics.Metrics, e
 	if err != nil {
 		return nil, errors.Wrapf(err, "TextParserExpfmt.TextToMetrics() error")
 	}
-	return metricFamiliesForamt(metricFamilies, groupLabels)
+	return metricFamiliesFormat(metricFamilies, groupLabels)
 }

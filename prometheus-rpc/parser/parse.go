@@ -36,7 +36,7 @@ func ParseMetrics(typ int, in io.Reader, groupLabels map[string]string) (*metric
 	}
 }
 
-func metricFamiliesForamt(mfs map[string]*dto.MetricFamily, groupLabels map[string]string) (*metrics.Metrics, error) {
+func metricFamiliesFormat(mfs map[string]*dto.MetricFamily, groupLabels map[string]string) (*metrics.Metrics, error) {
 	count := len(mfs)
 	ms := &metrics.Metrics{List: make([]*metrics.Metric, 0, count+8)}
 
@@ -46,9 +46,9 @@ func metricFamiliesForamt(mfs map[string]*dto.MetricFamily, groupLabels map[stri
 	p := bufferPool.Get().(*bytes.Buffer)
 	for _, mf := range mfs {
 		sanitizeLabels(mf, groupLabels, gLabelsNotYetDone)
-		metrics, err := expfmt.MetricFamilyFormat(mf, t, ms.List, p)
+		metricFamilyFormat, err := expfmt.MetricFamilyFormat(mf, t, ms.List, p)
 		if err == nil {
-			ms.List = metrics
+			ms.List = metricFamilyFormat
 		} else {
 			log.ErrorF("MetricFamilyFormat error:%s", err.Error())
 		}
@@ -69,7 +69,7 @@ func sanitizeLabels(mf *dto.MetricFamily, groupingLabels, gLabelsNotYetDone map[
 				lp.Value = proto.String(lv)
 				delete(gLabelsNotYetDone, ln)
 			}
-			if ln == string(model.InstanceLabel) {
+			if ln == model.InstanceLabel {
 				hasInstanceLabel = true
 			}
 			if len(gLabelsNotYetDone) == 0 && hasInstanceLabel {
@@ -82,7 +82,7 @@ func sanitizeLabels(mf *dto.MetricFamily, groupingLabels, gLabelsNotYetDone map[
 				Name:  proto.String(ln),
 				Value: proto.String(lv),
 			})
-			if ln == string(model.InstanceLabel) {
+			if ln == model.InstanceLabel {
 				hasInstanceLabel = true
 			}
 			delete(gLabelsNotYetDone, ln) // To prepare map for next metric.

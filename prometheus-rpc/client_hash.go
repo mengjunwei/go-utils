@@ -29,7 +29,7 @@ func (b *sizeBuffer) add(m *metrics.Metric) {
 	b.size += 1
 }
 
-func newBufferClient(manager *SendManager, i int, addr string) (*bufferClient, error) {
+func newBufferClient(manager *SenderManager, i int, addr string) (*bufferClient, error) {
 	c, err := NewClient(manager, i, addr)
 	if err != nil {
 		return nil, err
@@ -71,11 +71,11 @@ type HashClient struct {
 	seq      int
 	clients  []*bufferClient
 	dataChan chan *metrics.Metrics
-	addrs    []string
-	manager  *SendManager
+	adders   []string
+	manager  *SenderManager
 }
 
-func NewHashClient(manager *SendManager, seq int, hashAddrs []string) (*HashClient, error) {
+func NewHashClient(manager *SenderManager, seq int, hashAddrs []string) (*HashClient, error) {
 	sort.Strings(hashAddrs)
 	count := len(hashAddrs)
 	clients := make([]*bufferClient, 0, count)
@@ -90,7 +90,7 @@ func NewHashClient(manager *SendManager, seq int, hashAddrs []string) (*HashClie
 	hc := &HashClient{
 		seq:      seq,
 		clients:  clients,
-		addrs:    hashAddrs,
+		adders:   hashAddrs,
 		dataChan: make(chan *metrics.Metrics, batchNumbers),
 		manager:  manager,
 	}
@@ -138,7 +138,7 @@ func (hc *HashClient) sendLoop() error {
 
 func (hc *HashClient) flush() {
 	now := time.Now().Unix()
-	for i := 0; i < len(hc.addrs); i++ {
+	for i := 0; i < len(hc.adders); i++ {
 		hc.clients[i].flush(now)
 	}
 }

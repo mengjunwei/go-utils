@@ -26,7 +26,7 @@ func SetLog(l, typ, filePath string) {
 	if typ == "file" {
 		logPath := path.Join(filePath, "log.log")
 		param := fmt.Sprintf(`{"filename":"%s"}`, logPath)
-		logInstance.SetLogger("file", param)
+		_ = logInstance.SetLogger("file", param)
 	}
 }
 

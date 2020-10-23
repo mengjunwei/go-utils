@@ -15,49 +15,49 @@ func NewSafeSet() *SafeSet {
 	}
 }
 
-func (this *SafeSet) Add(key string) {
-	this.Lock()
-	this.M[key] = true
-	this.Unlock()
+func (ss *SafeSet) Add(key string) {
+	ss.Lock()
+	ss.M[key] = true
+	ss.Unlock()
 }
 
-func (this *SafeSet) Remove(key string) {
-	this.Lock()
-	delete(this.M, key)
-	this.Unlock()
+func (ss *SafeSet) Remove(key string) {
+	ss.Lock()
+	delete(ss.M, key)
+	ss.Unlock()
 }
 
-func (this *SafeSet) Clear() {
-	this.Lock()
-	this.M = make(map[string]bool)
-	this.Unlock()
+func (ss *SafeSet) Clear() {
+	ss.Lock()
+	ss.M = make(map[string]bool)
+	ss.Unlock()
 }
 
-func (this *SafeSet) Contains(key string) bool {
-	this.RLock()
-	_, exists := this.M[key]
-	this.RUnlock()
+func (ss *SafeSet) Contains(key string) bool {
+	ss.RLock()
+	_, exists := ss.M[key]
+	ss.RUnlock()
 	return exists
 }
 
-func (this *SafeSet) Size() int {
-	this.RLock()
-	len := len(this.M)
-	this.RUnlock()
+func (ss *SafeSet) Size() int {
+	ss.RLock()
+	len := len(ss.M)
+	ss.RUnlock()
 	return len
 }
 
-func (this *SafeSet) ToSlice() []string {
-	this.RLock()
-	defer this.RUnlock()
+func (ss *SafeSet) ToSlice() []string {
+	ss.RLock()
+	defer ss.RUnlock()
 
-	count := len(this.M)
+	count := len(ss.M)
 	if count == 0 {
 		return []string{}
 	}
 
 	r := []string{}
-	for key := range this.M {
+	for key := range ss.M {
 		r = append(r, key)
 	}
 

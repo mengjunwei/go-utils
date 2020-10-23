@@ -13,67 +13,67 @@ func NewIntStringMap() *IntStringMap {
 	return &IntStringMap{M: make(map[int]string)}
 }
 
-func (this *IntStringMap) Clone() map[int]string {
+func (i *IntStringMap) Clone() map[int]string {
 	m := make(map[int]string)
-	this.RLock()
-	defer this.RUnlock()
-	for k, v := range this.M {
+	i.RLock()
+	defer i.RUnlock()
+	for k, v := range i.M {
 		m[k] = v
 	}
 	return m
 }
 
-func (this *IntStringMap) Put(key int, val string) {
-	this.Lock()
-	defer this.Unlock()
-	this.M[key] = val
+func (i *IntStringMap) Put(key int, val string) {
+	i.Lock()
+	defer i.Unlock()
+	i.M[key] = val
 }
 
-func (this *IntStringMap) Puts(m map[int]string) {
+func (i *IntStringMap) Puts(m map[int]string) {
 	todo := make(map[int]string)
-	this.RLock()
+	i.RLock()
 	for k, v := range m {
-		old, exists := this.M[k]
+		old, exists := i.M[k]
 		if exists && v == old {
 			continue
 		}
 		todo[k] = v
 	}
-	this.RUnlock()
+	i.RUnlock()
 
 	if len(todo) == 0 {
 		return
 	}
 
-	this.Lock()
+	i.Lock()
 	for k, v := range todo {
-		this.M[k] = v
+		i.M[k] = v
 	}
-	this.Unlock()
+	i.Unlock()
 }
 
-func (this *IntStringMap) Get(key int) (string, bool) {
-	this.RLock()
-	defer this.RUnlock()
-	val, exists := this.M[key]
+func (i *IntStringMap) Get(key int) (string, bool) {
+	i.RLock()
+	defer i.RUnlock()
+	val, exists := i.M[key]
 	return val, exists
 }
 
-func (this *IntStringMap) Exists(key int) bool {
-	_, exists := this.Get(key)
+func (i *IntStringMap) Exists(key int) bool {
+	_, exists := i.Get(key)
 	return exists
 }
 
-func (this *IntStringMap) Remove(key int) {
-	this.Lock()
-	defer this.Unlock()
-	delete(this.M, key)
+func (i *IntStringMap) Remove(key int) {
+	i.Lock()
+	defer i.Unlock()
+	delete(i.M, key)
 }
 
-func (this *IntStringMap) RemoveBatch(keys []int) {
-	this.Lock()
-	defer this.Unlock()
+func (i *IntStringMap) RemoveBatch(keys []int) {
+	i.Lock()
+	defer i.Unlock()
 	for _, key := range keys {
-		delete(this.M, key)
+		delete(i.M, key)
 	}
 }

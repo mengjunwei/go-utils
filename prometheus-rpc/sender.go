@@ -20,10 +20,10 @@ type Sender struct {
 	flushInterval int
 	buff          []*metrics.Metric
 	dataChan      chan *metrics.Metrics
-	manager       *SendManager
+	manager       *SenderManager
 }
 
-func NewSender(manager *SendManager, i, flushInterval int, addr string) *Sender {
+func NewSender(manager *SenderManager, i, flushInterval int, addr string) *Sender {
 	sc := &Sender{
 		seq:           i,
 		addr:          addr,
@@ -82,7 +82,7 @@ func (s *Sender) sendLoop() {
 				return
 			}
 
-			//向judge打一份
+			//向hashClient打一份
 			if hashClient != nil {
 				if err := hashClient.Send(d); err != nil {
 					log.ErrorF("hashClient send error :%s", err.Error())
@@ -111,7 +111,6 @@ func (s *Sender) sendLoop() {
 					s.buff = s.buff[:0]
 				}
 			}
-
 		case <-t.C:
 			if len(s.buff) > 0 {
 				if err := client.Send(&metrics.Metrics{List: s.buff}); err != nil {
@@ -121,8 +120,6 @@ func (s *Sender) sendLoop() {
 			}
 		}
 	}
-
-	log.InfoF("ds:%s rpc[%s] sender loop seq: %d is quit", s.manager.name, s.addr, s.seq)
 }
 
 func (s *Sender) Stop() {

@@ -24,10 +24,10 @@ type Client struct {
 	addr       string
 	transport  thrift.TTransport
 	client     *metrics.MetricsTransferClient
-	manager    *SendManager
+	manager    *SenderManager
 }
 
-func NewClient(manager *SendManager, i int, addr string) (*Client, error) {
+func NewClient(manager *SenderManager, i int, addr string) (*Client, error) {
 	clinet := &Client{
 		addr:    addr,
 		seq:     i,
@@ -70,7 +70,7 @@ func (c *Client) Send(ms *metrics.Metrics) error {
 	} else {
 		c.errCount = 0
 		//log.Debugf("rpc clent %d send metrics ok: %d", c.seq, len(ms.List))
-		c.manager.metricStatus(0, uint64(len(ms.List)))
+		c.manager.atomicMetricStatus(0, uint64(len(ms.List)))
 	}
 
 	return nil
@@ -84,7 +84,6 @@ func (c *Client) reConnLoop() {
 		defer func() {
 			c.errCount = 0
 			atomic.AddInt32(&c.reConnFlag, -1)
-			//log.Infof("rpc cleint connect ok: %s", c.addr)
 		}()
 		for {
 			err := c.conn()
