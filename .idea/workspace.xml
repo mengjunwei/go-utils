@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0216b316-d37d-4980-a29c-6ebcc6a59e14" name="Default Changelist" comment="" />
+    <list default="true" id="0216b316-d37d-4980-a29c-6ebcc6a59e14" name="Default Changelist" comment="add" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -46,5 +46,11 @@
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="659" y="280" width="602" height="548" key="find.popup" timestamp="1606295533596">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="659" y="280" width="602" height="548" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1606295533596" />
   </component>
 </project>
