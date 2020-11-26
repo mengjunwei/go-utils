@@ -5,7 +5,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/mengjunwei/go-utils/log"
-	"github.com/mengjunwei/go-utils/prometheus-rpc/gen-go/metrics"
+	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
 type MetricsRpcServer struct {
@@ -21,9 +21,10 @@ func NewMetricsRpcServer(addr string) *MetricsRpcServer {
 func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 	transport, err := thrift.NewTServerSocket(s.addr)
 	if err != nil {
-		return errors.Wrapf(err, "thrift.NewTServerSocket")
+		return errors.Wrapf(err, "NewTServerSocket")
 	}
 
+	//handler := &MetricsTransferHandler{processor: f}
 	processor := metrics.NewMetricsTransferProcessor(&handler)
 
 	transportFactory := thrift.NewTBufferedTransportFactory(8192)
@@ -35,9 +36,9 @@ func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 		protocolFactory,
 	)
 
-	log.InfoF("MetricsRpcServer addr:%s", s.addr)
+	log.InfoF("MetricsRpcServer Serve:%s", s.addr)
 	if err := s.server.Serve(); err != nil {
-		return errors.Wrapf(err, "s.server.Serve")
+		return errors.Wrapf(err, "server.Serve()")
 	}
 
 	return nil
@@ -45,9 +46,11 @@ func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 
 func (s *MetricsRpcServer) Stop() error {
 	if s.server != nil {
-		_ = s.server.Stop()
+		s.server.Stop()
 		s.server = nil
+
 		log.Info("MetricsRpcServer Stop")
 	}
+
 	return nil
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/matttproud/golang_protobuf_extensions/pbutil"
 	dto "github.com/prometheus/client_model/go"
 
-	"github.com/mengjunwei/go-utils/prometheus-rpc/gen-go/metrics"
+	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
 func ParseProtobuf(in io.Reader, groupLabels map[string]string) (*metrics.Metrics, error) {
@@ -21,7 +21,7 @@ func ParseProtobuf(in io.Reader, groupLabels map[string]string) (*metrics.Metric
 		}
 		metricFamilies[mf.GetName()] = mf
 	}
-	return metricFamiliesFormat(metricFamilies, groupLabels)
+	return metricFamiliesForamt(metricFamilies, groupLabels)
 }
 
 func ParseProtobufToMetricFamily(in io.Reader) (map[string]*dto.MetricFamily, error) {

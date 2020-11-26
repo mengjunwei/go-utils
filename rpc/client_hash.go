@@ -3,15 +3,12 @@ package rpc
 import (
 	"errors"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/mengjunwei/go-utils/bytes-util"
 	"github.com/mengjunwei/go-utils/log"
-	"github.com/mengjunwei/go-utils/prometheus-rpc/gen-go/metrics"
+	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
-
-const needSendFlag = "__"
 
 type bufferClient struct {
 	client        *Client
@@ -29,13 +26,13 @@ func (b *sizeBuffer) add(m *metrics.Metric) {
 	b.size += 1
 }
 
-func newBufferClient(manager *SenderManager, i int, addr string) (*bufferClient, error) {
+func newBufferClient(manager *SendManager, i int, addr string) (*bufferClient, error) {
 	c, err := NewClient(manager, i, addr)
 	if err != nil {
 		return nil, err
 	}
 	buf := sizeBuffer{
-		buf:  make([]*metrics.Metric, batchNumbers*2),
+		buf:  make([]*metrics.Metric, batchNumbers*2+1),
 		size: 0,
 	}
 
@@ -48,7 +45,7 @@ func newBufferClient(manager *SenderManager, i int, addr string) (*bufferClient,
 
 func (c *bufferClient) tryToSend(m *metrics.Metric) {
 	c.buf.add(m)
-	if c.buf.size >= batchNumbers {
+	if c.buf.size >= batchNumbers*2 {
 		c.send()
 	}
 }
@@ -71,11 +68,11 @@ type HashClient struct {
 	seq      int
 	clients  []*bufferClient
 	dataChan chan *metrics.Metrics
-	adders   []string
-	manager  *SenderManager
+	addrs    []string
+	manager  *SendManager
 }
 
-func NewHashClient(manager *SenderManager, seq int, hashAddrs []string) (*HashClient, error) {
+func NewHashClient(manager *SendManager, seq int, hashAddrs []string) (*HashClient, error) {
 	sort.Strings(hashAddrs)
 	count := len(hashAddrs)
 	clients := make([]*bufferClient, 0, count)
@@ -86,12 +83,15 @@ func NewHashClient(manager *SenderManager, seq int, hashAddrs []string) (*HashCl
 		}
 		clients = append(clients, client)
 	}
+	if len(clients) == 0 {
+		return nil, errors.New("NewHashClient clients count = 0")
+	}
 
 	hc := &HashClient{
 		seq:      seq,
 		clients:  clients,
-		adders:   hashAddrs,
-		dataChan: make(chan *metrics.Metrics, batchNumbers),
+		addrs:    hashAddrs,
+		dataChan: make(chan *metrics.Metrics, batchNumbers*2),
 		manager:  manager,
 	}
 
@@ -124,21 +124,22 @@ func (hc *HashClient) sendLoop() error {
 
 			if ms != nil {
 				for _, m := range ms.List {
-					if strings.Index(m.MetricKey, needSendFlag) > 0 {
-						pos := Murmur3(bytes_util.ToUnsafeBytes(m.MetricKey)) % count
-						hc.clients[pos].tryToSend(m)
-					}
+					pos := Murmur3(bytes_util.ToUnsafeBytes(m.MetricKey)) % count
+					hc.clients[pos].tryToSend(m)
 				}
 			}
 		case <-t.C:
 			hc.flush()
 		}
 	}
+
+	log.InfoF("ds:%s hash client %d quit, hash addr: %v", hc.manager.name, hc.seq, hc.addrs)
+	return nil
 }
 
 func (hc *HashClient) flush() {
 	now := time.Now().Unix()
-	for i := 0; i < len(hc.adders); i++ {
+	for i := 0; i < len(hc.addrs); i++ {
 		hc.clients[i].flush(now)
 	}
 }

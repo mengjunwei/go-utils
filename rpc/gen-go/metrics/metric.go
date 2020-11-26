@@ -7,9 +7,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"reflect"
-
 	"github.com/apache/thrift/lib/go/thrift"
+	"reflect"
 )
 
 // (needed to ensure safety because of naive import list construction.)
@@ -219,7 +218,8 @@ func (p *Metric) String() string {
 // Attributes:
 //  - List
 type Metrics struct {
-	List []*Metric `thrift:"List,1,required" db:"List" json:"List"`
+	DefaultToJudge bool
+	List           []*Metric `thrift:"List,1,required" db:"List" json:"List"`
 }
 
 func NewMetrics() *Metrics {

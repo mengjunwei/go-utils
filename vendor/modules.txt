@@ -34,6 +34,8 @@ github.com/hashicorp/golang-lru/simplelru
 ## explicit
 github.com/maprost/restclient/rcdep
 github.com/maprost/restclient/rcquery
+# github.com/maprost/should v0.0.0-20180523202427-db768985d57f
+## explicit
 # github.com/matttproud/golang_protobuf_extensions v1.0.1
 ## explicit
 github.com/matttproud/golang_protobuf_extensions/pbutil

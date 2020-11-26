@@ -1,14 +1,14 @@
 package parser
 
 import (
-	dto "github.com/prometheus/client_model/go"
 	"io"
 
 	"github.com/pkg/errors"
 
 	"github.com/mengjunwei/go-utils/container/list"
-	"github.com/mengjunwei/go-utils/prometheus-rpc/gen-go/metrics"
-	"github.com/mengjunwei/go-utils/prometheus-rpc/parser/expfmt"
+	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
+	"github.com/mengjunwei/go-utils/rpc/parser/expfmt"
+	dto "github.com/prometheus/client_model/go"
 )
 
 var parserPool *TextParserPool
@@ -44,7 +44,7 @@ func ParseText(in io.Reader, groupLabels map[string]string) (*metrics.Metrics, e
 	if err != nil {
 		return nil, errors.Wrapf(err, "TextParserExpfmt.TextToMetrics() error")
 	}
-	return metricFamiliesFormat(metricFamilies, groupLabels)
+	return metricFamiliesForamt(metricFamilies, groupLabels)
 }
 
 func ParseTextToMetricFamily(in io.Reader) (map[string]*dto.MetricFamily, error) {

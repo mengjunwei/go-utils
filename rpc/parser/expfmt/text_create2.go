@@ -8,7 +8,7 @@ import (
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/model"
 
-	"github.com/mengjunwei/go-utils/prometheus-rpc/gen-go/metrics"
+	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
 func MetricFamilyFormat(in *dto.MetricFamily, t int64, ms []*metrics.Metric, b *bytes.Buffer) ([]*metrics.Metric, error) {
