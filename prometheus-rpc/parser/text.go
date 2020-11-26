@@ -1,6 +1,7 @@
 package parser
 
 import (
+	dto "github.com/prometheus/client_model/go"
 	"io"
 
 	"github.com/pkg/errors"
@@ -44,4 +45,15 @@ func ParseText(in io.Reader, groupLabels map[string]string) (*metrics.Metrics, e
 		return nil, errors.Wrapf(err, "TextParserExpfmt.TextToMetrics() error")
 	}
 	return metricFamiliesFormat(metricFamilies, groupLabels)
+}
+
+func ParseTextToMetricFamily(in io.Reader) (map[string]*dto.MetricFamily, error) {
+	p := parserPool.getTextParser().(*expfmt.TextParser)
+	metricFamilies, err := p.TextToMetricFamilies(in)
+	parserPool.putTextParser(p)
+
+	if err != nil {
+		return nil, errors.Wrapf(err, "TextParserExpfmt.TextToMetrics() error")
+	}
+	return metricFamilies, nil
 }
