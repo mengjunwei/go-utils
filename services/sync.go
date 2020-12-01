@@ -94,7 +94,7 @@ func (s *SyncService) Run(ctx context.Context) error {
 	for _, task := range s.tasks {
 		//先同步一把数据，使在程序完全启动前， 保证是有数据的
 		if err := s.syncLoop(false, task); err != nil {
-			return fmt.Errorf("sync service task: %s error: %w", task.Name, err)
+			log.ErrorF("sync service task: %s error: %s", task.Name, err.Error())
 		}
 		go s.syncLoop(true, task)
 	}
