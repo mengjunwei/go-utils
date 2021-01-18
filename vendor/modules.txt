@@ -16,17 +16,51 @@ github.com/astaxie/beego/utils
 github.com/beorn7/perks/quantile
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
+# github.com/coreos/etcd v3.3.25+incompatible
+## explicit
+github.com/coreos/etcd/auth/authpb
+github.com/coreos/etcd/clientv3/balancer
+github.com/coreos/etcd/clientv3/balancer/connectivity
+github.com/coreos/etcd/clientv3/balancer/picker
+github.com/coreos/etcd/clientv3/balancer/resolver/endpoint
+github.com/coreos/etcd/clientv3/credentials
+github.com/coreos/etcd/etcdserver/api/v3rpc/rpctypes
+github.com/coreos/etcd/etcdserver/etcdserverpb
+github.com/coreos/etcd/mvcc/mvccpb
+github.com/coreos/etcd/pkg/logutil
+github.com/coreos/etcd/pkg/systemd
+github.com/coreos/etcd/pkg/types
+github.com/coreos/etcd/raft
+github.com/coreos/etcd/raft/raftpb
+github.com/coreos/etcd/version
+# github.com/coreos/go-semver v0.3.0
+## explicit
+github.com/coreos/go-semver/semver
+# github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf
+## explicit
+github.com/coreos/go-systemd/journal
+# github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f
+## explicit
+github.com/coreos/pkg/capnslog
 # github.com/garyburd/redigo v1.6.2
 ## explicit
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
+# github.com/gogo/protobuf v1.1.1
+github.com/gogo/protobuf/gogoproto
+github.com/gogo/protobuf/proto
+github.com/gogo/protobuf/protoc-gen-gogo/descriptor
 # github.com/golang/protobuf v1.4.2
 ## explicit
 github.com/golang/protobuf/proto
+github.com/golang/protobuf/protoc-gen-go/descriptor
 github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
+# github.com/google/uuid v1.1.5
+## explicit
+github.com/google/uuid
 # github.com/hashicorp/golang-lru v0.5.4
 github.com/hashicorp/golang-lru
 github.com/hashicorp/golang-lru/simplelru
@@ -69,11 +103,31 @@ github.com/spaolacci/murmur3
 # github.com/ylywyn/restclient v0.0.0-20190523012311-a5f1ab19a99e
 ## explicit
 github.com/ylywyn/restclient
+# go.etcd.io/etcd v3.3.25+incompatible
+## explicit
+go.etcd.io/etcd/clientv3
+# go.uber.org/atomic v1.6.0
+go.uber.org/atomic
+# go.uber.org/multierr v1.5.0
+go.uber.org/multierr
+# go.uber.org/zap v1.16.0
+## explicit
+go.uber.org/zap
+go.uber.org/zap/buffer
+go.uber.org/zap/internal/bufferpool
+go.uber.org/zap/internal/color
+go.uber.org/zap/internal/exit
+go.uber.org/zap/zapcore
 # golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
 # golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+golang.org/x/net/http/httpguts
+golang.org/x/net/http2
+golang.org/x/net/http2/hpack
 golang.org/x/net/idna
+golang.org/x/net/internal/timeseries
+golang.org/x/net/trace
 # golang.org/x/sys v0.0.0-20200615200032-f1bc736245b1
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
@@ -83,6 +137,49 @@ golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
+# google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
+google.golang.org/genproto/googleapis/api/annotations
+google.golang.org/genproto/googleapis/rpc/status
+# google.golang.org/grpc v1.26.0
+## explicit
+google.golang.org/grpc
+google.golang.org/grpc/attributes
+google.golang.org/grpc/backoff
+google.golang.org/grpc/balancer
+google.golang.org/grpc/balancer/base
+google.golang.org/grpc/balancer/roundrobin
+google.golang.org/grpc/binarylog/grpc_binarylog_v1
+google.golang.org/grpc/codes
+google.golang.org/grpc/connectivity
+google.golang.org/grpc/credentials
+google.golang.org/grpc/credentials/internal
+google.golang.org/grpc/encoding
+google.golang.org/grpc/encoding/proto
+google.golang.org/grpc/grpclog
+google.golang.org/grpc/internal
+google.golang.org/grpc/internal/backoff
+google.golang.org/grpc/internal/balancerload
+google.golang.org/grpc/internal/binarylog
+google.golang.org/grpc/internal/buffer
+google.golang.org/grpc/internal/channelz
+google.golang.org/grpc/internal/envconfig
+google.golang.org/grpc/internal/grpcrand
+google.golang.org/grpc/internal/grpcsync
+google.golang.org/grpc/internal/resolver/dns
+google.golang.org/grpc/internal/resolver/passthrough
+google.golang.org/grpc/internal/syscall
+google.golang.org/grpc/internal/transport
+google.golang.org/grpc/keepalive
+google.golang.org/grpc/metadata
+google.golang.org/grpc/naming
+google.golang.org/grpc/peer
+google.golang.org/grpc/resolver
+google.golang.org/grpc/resolver/dns
+google.golang.org/grpc/resolver/passthrough
+google.golang.org/grpc/serviceconfig
+google.golang.org/grpc/stats
+google.golang.org/grpc/status
+google.golang.org/grpc/tap
 # google.golang.org/protobuf v1.23.0
 google.golang.org/protobuf/encoding/prototext
 google.golang.org/protobuf/encoding/protowire
@@ -111,6 +208,7 @@ google.golang.org/protobuf/reflect/protoreflect
 google.golang.org/protobuf/reflect/protoregistry
 google.golang.org/protobuf/runtime/protoiface
 google.golang.org/protobuf/runtime/protoimpl
+google.golang.org/protobuf/types/descriptorpb
 google.golang.org/protobuf/types/known/anypb
 google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
