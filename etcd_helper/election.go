@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+
+	"github.com/mengjunwei/go-utils/log"
 )
 
 type Election struct {
@@ -71,6 +73,7 @@ func (e *Election) Start() error {
 
 	// 开始
 	if _, err := e.etcdConn.GetService(e.path); err != nil {
+		log.Error(err.Error())
 		return err
 	}
 
@@ -90,7 +93,7 @@ func (e *Election) Stop() {
 		childPath := fmt.Sprintf("%s/%s", e.path, e.addr)
 		_, err := e.etcdConn.client.Delete(context.Background(), childPath)
 		if err != nil {
-			fmt.Println(err)
+			log.Error(err.Error())
 		}
 	}
 

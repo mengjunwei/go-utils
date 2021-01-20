@@ -2,7 +2,6 @@ package etcd_helper
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -63,15 +62,18 @@ func (c *Conn) RegService(key string, val string) error {
 	//设置租约过期时间为20秒
 	leaseRes, err := clientv3.NewLease(c.client).Grant(ctx, sessionTimeout)
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
 	_, err = kv.Put(context.Background(), key, val, clientv3.WithLease(leaseRes.ID)) //把服务的key绑定到租约下面
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
 	//续租时间大概自动为租约的三分之一时间，context.TODO官方定义为是你不知道要传什么
 	keepaliveRes, err := lease.KeepAlive(context.TODO(), leaseRes.ID)
 	if err != nil {
+		log.Error(err.Error())
 		return err
 	}
 	go c.lisKeepAlive(keepaliveRes)
@@ -83,7 +85,7 @@ func (c *Conn) lisKeepAlive(keepaliveRes <-chan *clientv3.LeaseKeepAliveResponse
 		select {
 		case ret := <-keepaliveRes:
 			if ret != nil {
-				fmt.Println(ret.ID, "续租成功", time.Now())
+				log.DebugF("%d 续租成功 %d", ret.ID, time.Now())
 			}
 		case <-c.ctx.Done():
 			return
@@ -95,6 +97,7 @@ func (c *Conn) lisKeepAlive(keepaliveRes <-chan *clientv3.LeaseKeepAliveResponse
 func (c *Conn) GetService(prefix string) ([]string, error) {
 	resp, err := c.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
+		log.Error(err.Error())
 		return nil, err
 	}
 
@@ -195,7 +198,6 @@ func (c *Conn) callbackDelayLoop() {
 			eventsMap[now] = event
 			timer.Reset(time.Duration(c.cbDelay) * time.Second)
 			log.DebugF("discovery callbackDelayLoop cb will  be call: %v, now:%d, delay:%d s", event, now, c.cbDelay)
-
 		case <-timer.C:
 			now := time.Now().Unix()
 			max, event := findMax(eventsMap, now)

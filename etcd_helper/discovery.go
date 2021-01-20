@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/mengjunwei/go-utils/log"
 )
 
 type Discovery struct {
@@ -67,6 +69,7 @@ func (d *Discovery) Start() error {
 
 	// 开始
 	if _, err := d.etcdConn.GetService(d.path); err != nil {
+		log.Error(err.Error())
 		return err
 	}
 
@@ -86,6 +89,7 @@ func (d *Discovery) Stop() {
 		childPath := fmt.Sprintf("%s/%s", d.path, d.addr)
 		_, err := d.etcdConn.client.Delete(context.Background(), childPath)
 		if err != nil {
+			log.Error(err.Error())
 			fmt.Println(err)
 		}
 	}
