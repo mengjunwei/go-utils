@@ -16,6 +16,8 @@ github.com/astaxie/beego/utils
 github.com/beorn7/perks/quantile
 # github.com/cespare/xxhash/v2 v2.1.1
 github.com/cespare/xxhash/v2
+# github.com/coreos/bbolt v1.3.5 => go.etcd.io/bbolt v1.3.4
+## explicit
 # github.com/coreos/etcd v3.3.25+incompatible
 ## explicit
 github.com/coreos/etcd/auth/authpb
@@ -42,14 +44,20 @@ github.com/coreos/go-systemd/journal
 # github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f
 ## explicit
 github.com/coreos/pkg/capnslog
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+## explicit
+# github.com/dustin/go-humanize v1.0.0
+## explicit
 # github.com/garyburd/redigo v1.6.2
 ## explicit
 github.com/garyburd/redigo/internal
 github.com/garyburd/redigo/redis
-# github.com/gogo/protobuf v1.1.1
+# github.com/gogo/protobuf v1.2.1
 github.com/gogo/protobuf/gogoproto
 github.com/gogo/protobuf/proto
 github.com/gogo/protobuf/protoc-gen-gogo/descriptor
+# github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e
+## explicit
 # github.com/golang/protobuf v1.4.2
 ## explicit
 github.com/golang/protobuf/proto
@@ -58,12 +66,24 @@ github.com/golang/protobuf/ptypes
 github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/timestamp
+# github.com/google/btree v1.0.0
+## explicit
 # github.com/google/uuid v1.1.5
 ## explicit
 github.com/google/uuid
+# github.com/gorilla/websocket v1.4.2
+## explicit
+# github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
+## explicit
+# github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
+## explicit
+# github.com/grpc-ecosystem/grpc-gateway v1.16.0
+## explicit
 # github.com/hashicorp/golang-lru v0.5.4
 github.com/hashicorp/golang-lru
 github.com/hashicorp/golang-lru/simplelru
+# github.com/jonboulle/clockwork v0.2.2
+## explicit
 # github.com/maprost/restclient v0.0.0-20180504110927-df4e93f6a7e8
 ## explicit
 github.com/maprost/restclient/rcdep
@@ -97,12 +117,20 @@ github.com/prometheus/procfs/internal/util
 github.com/samuel/go-zookeeper/zk
 # github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644
 github.com/shiena/ansicolor
+# github.com/soheilhy/cmux v0.1.4
+## explicit
 # github.com/spaolacci/murmur3 v1.1.0
 ## explicit
 github.com/spaolacci/murmur3
+# github.com/tmc/grpc-websocket-proxy v0.0.0-20201229170055-e5319fda7802
+## explicit
+# github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2
+## explicit
 # github.com/ylywyn/restclient v0.0.0-20190523012311-a5f1ab19a99e
 ## explicit
 github.com/ylywyn/restclient
+# go.etcd.io/bbolt v1.3.5
+## explicit
 # go.etcd.io/etcd v3.3.25+incompatible
 ## explicit
 go.etcd.io/etcd/clientv3
@@ -118,10 +146,10 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.0.0-20191011191535-87dc89f01550
+# golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 golang.org/x/crypto/acme
 golang.org/x/crypto/acme/autocert
-# golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+# golang.org/x/net v0.0.0-20200822124328-c89045814202
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
@@ -132,15 +160,17 @@ golang.org/x/net/trace
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.3.0
+# golang.org/x/text v0.3.2
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi
 golang.org/x/text/unicode/norm
-# google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55
+# golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
+## explicit
+# google.golang.org/genproto v0.0.0-20200513103714-09dca8ec2884
 google.golang.org/genproto/googleapis/api/annotations
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.26.0
+# google.golang.org/grpc v1.36.0 => google.golang.org/grpc v1.26.0
 ## explicit
 google.golang.org/grpc
 google.golang.org/grpc/attributes
@@ -214,3 +244,6 @@ google.golang.org/protobuf/types/known/durationpb
 google.golang.org/protobuf/types/known/timestamppb
 # gopkg.in/yaml.v2 v2.2.8
 gopkg.in/yaml.v2
+# sigs.k8s.io/yaml v1.2.0
+## explicit
+# github.com/coreos/bbolt v1.3.5 => go.etcd.io/bbolt v1.3.4
