@@ -21,6 +21,17 @@ type Discovery struct {
 	path        string
 	etcdServers []string
 	etcdConn    *Conn
+
+	isRegService bool
+}
+
+func (d *Discovery) SetNoRegService() {
+	d.Lock()
+	defer func() {
+		d.Unlock()
+	}()
+	d.isRegService = false
+	return
 }
 
 func NewDiscovery(etcdServers []string, appName, addr, metaData string, ctx context.Context) (*Discovery, error) {
@@ -35,13 +46,14 @@ func NewDiscovery(etcdServers []string, appName, addr, metaData string, ctx cont
 	path := fmt.Sprintf("%s/%s/%s", rootPath, appName, discoveryPath)
 
 	e := &Discovery{
-		ctx:         ctx,
-		start:       false,
-		app:         appName,
-		addr:        addr,
-		metaData:    metaData,
-		path:        path,
-		etcdServers: etcdServers,
+		ctx:          ctx,
+		start:        false,
+		app:          appName,
+		addr:         addr,
+		metaData:     metaData,
+		path:         path,
+		etcdServers:  etcdServers,
+		isRegService: true,
 	}
 	conn := NewConn(e.etcdServers, e.ctx)
 	e.etcdConn = conn
@@ -58,9 +70,11 @@ func (d *Discovery) Start() error {
 
 	// 初始化
 	childPath := fmt.Sprintf("%s/%s", d.path, d.addr)
-	if err := d.etcdConn.RegService(childPath, d.metaData); err != nil {
-		d.etcdConn.client.Close()
-		return fmt.Errorf("discovery RegService path: %w", err)
+	if d.isRegService {
+		if err := d.etcdConn.RegService(childPath, d.metaData); err != nil {
+			d.etcdConn.client.Close()
+			return fmt.Errorf("discovery RegService path: %w", err)
+		}
 	}
 
 	d.Lock()
@@ -85,7 +99,7 @@ func (d *Discovery) Stop() {
 	d.start = false
 
 	//删除临时节点
-	if d.etcdConn != nil {
+	if d.etcdConn != nil && d.isRegService {
 		childPath := fmt.Sprintf("%s/%s", d.path, d.addr)
 		_, err := d.etcdConn.client.Delete(context.Background(), childPath)
 		if err != nil {
