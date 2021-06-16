@@ -6,13 +6,17 @@ import (
 	"net"
 	"strings"
 
-	"github.com/astaxie/beego"
+	beego "github.com/beego/beego/v2/server/web"
 )
 
 var Host string
 
 func GetLocalIp() (string, error) {
-	addr := strings.TrimSpace(beego.AppConfig.String("HostAddr"))
+	hostAddr, err := beego.AppConfig.String("HostAddr")
+	if err != nil {
+		return "", err
+	}
+	addr := strings.TrimSpace(hostAddr)
 	if len(addr) > 0 {
 		Host = addr
 		return addr, nil

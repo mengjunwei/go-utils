@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/apache/thrift v0.13.0
-	github.com/astaxie/beego v1.12.2
 	github.com/beego/beego/v2 v2.0.1
 	github.com/coreos/bbolt v1.3.5 // indirect
 	github.com/coreos/etcd v3.3.25+incompatible
