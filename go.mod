@@ -5,11 +5,9 @@ go 1.14
 require (
 	github.com/apache/thrift v0.13.0
 	github.com/astaxie/beego v1.12.2
+	github.com/beego/beego/v2 v2.0.1
 	github.com/coreos/bbolt v1.3.5 // indirect
 	github.com/coreos/etcd v3.3.25+incompatible
-	github.com/coreos/go-semver v0.3.0 // indirect
-	github.com/coreos/go-systemd v0.0.0-20191104093116-d3cd4ed1dbcf // indirect
-	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/dustin/go-humanize v1.0.0 // indirect
 	github.com/garyburd/redigo v1.6.2
@@ -19,7 +17,6 @@ require (
 	github.com/google/uuid v1.1.5 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
-	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/jonboulle/clockwork v0.2.2 // indirect
 	github.com/maprost/restclient v0.0.0-20180504110927-df4e93f6a7e8 // indirect

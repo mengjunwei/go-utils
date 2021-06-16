@@ -5,7 +5,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/astaxie/beego/logs"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 var logInstance *logs.BeeLogger
