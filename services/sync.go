@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -175,6 +176,7 @@ func (s *SyncService) syncAll(t *SyncTask) (*HttpRespData, error) {
 		return nil, nil
 	}
 
+	firstTimestamp := rets.Timestamp
 	all := rets.Count
 	cur := len(rets.Data)
 	for {
@@ -186,6 +188,9 @@ func (s *SyncService) syncAll(t *SyncTask) (*HttpRespData, error) {
 		temp, err := s.sync(t)
 		if err != nil {
 			return nil, err
+		}
+		if temp.Timestamp != firstTimestamp {
+			return nil, errors.New("get all firstTimestamp is modify")
 		}
 		num := len(temp.Data)
 		if num == 0 {
