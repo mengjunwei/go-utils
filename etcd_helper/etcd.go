@@ -21,7 +21,7 @@ const (
 )
 
 var (
-	opt *Options
+	opt interface{}
 )
 
 type Options struct {
@@ -54,9 +54,10 @@ func NewConn(endpoints []string, ctx context.Context) *Conn {
 		Endpoints:   endpoints,
 		DialTimeout: dialTimeout * time.Second,
 	}
-	if opt != nil {
-		config.Password = opt.Password
-		config.Username = opt.Username
+	options, ok := opt.(*Options)
+	if ok {
+		config.Password = options.Password
+		config.Username = options.Username
 	}
 	client, err := clientv3.New(config)
 	if err != nil {
