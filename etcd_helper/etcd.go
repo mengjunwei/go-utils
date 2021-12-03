@@ -20,6 +20,22 @@ const (
 	dialTimeout    = 5
 )
 
+var (
+	opt *Options
+)
+
+type Options struct {
+	// Username is a user name for authentication.
+	Username string `json:"username"`
+
+	// Password is a password for authentication.
+	Password string `json:"password"`
+}
+
+func SetOption(options *Options) {
+	opt = options
+}
+
 type Conn struct {
 	ctx context.Context
 
@@ -37,6 +53,10 @@ func NewConn(endpoints []string, ctx context.Context) *Conn {
 	config := clientv3.Config{
 		Endpoints:   endpoints,
 		DialTimeout: dialTimeout * time.Second,
+	}
+	if opt != nil {
+		config.Password = opt.Password
+		config.Username = opt.Username
 	}
 	client, err := clientv3.New(config)
 	if err != nil {
