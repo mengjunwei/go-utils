@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/samuel/go-zookeeper/zk"
-
-	"github.com/mengjunwei/go-utils/log"
 )
 
 type Election struct {
@@ -144,13 +142,13 @@ func (e *Election) election() error {
 		if e.cb != nil {
 			e.cb(e.addr)
 		}
-		log.InfoF("master is: %s", e.addr)
+		logInstance.Info("master is: %s", e.addr)
 		return nil
 	}
 
 	if err != zk.ErrNodeExists {
 		err = fmt.Errorf("election create: %w", err)
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		time.Sleep(time.Second * 5)
 		panic(err.Error())
 	}
@@ -158,7 +156,7 @@ func (e *Election) election() error {
 	v, _, err := e.zkConn.Get(e.path)
 	if err != nil {
 		err = fmt.Errorf("election get: %w", err)
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		time.Sleep(time.Second * 5)
 		panic(err.Error())
 	}
@@ -166,7 +164,7 @@ func (e *Election) election() error {
 	master := string(v)
 	if master == e.addr {
 		//主节点重启太快, 临时数据没来得及清除
-		log.Warn("election ephemeral data exist!")
+		logInstance.Warning("election ephemeral data exist!")
 		//time.Sleep(time.Second*sessionTimeout + 1)
 		//panic("election ephemeral data exist! please wait")
 	}
@@ -176,25 +174,25 @@ func (e *Election) election() error {
 	e.Unlock()
 
 	e.startWatch()
-	log.InfoF("%s is not master(master is :%s).", e.addr, master)
+	logInstance.Info("%s is not master(master is :%s).", e.addr, master)
 	return nil
 }
 
 func (e *Election) startWatch() {
 	e.watchCount += 1
-	log.InfoF("election watch count: %d", e.watchCount)
+	logInstance.Info("election watch count: %d", e.watchCount)
 
 	exists, _, event, err := e.zkConn.ExistsW(e.path)
 	if !exists {
 		err = fmt.Errorf("election watch no node")
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		time.Sleep(time.Second * 5)
 		panic(err.Error())
 	}
 
 	if err != nil {
 		err = fmt.Errorf("election watch: %w", err)
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		time.Sleep(time.Second * 5)
 		panic(err.Error())
 	}
@@ -211,7 +209,7 @@ func (e *Election) watchEvent(ech <-chan zk.Event) {
 	e.Unlock()
 
 	count := e.watchCount
-	log.DebugF("election watchEvent begin, watch count: %d", count)
+	logInstance.Debug("election watchEvent begin, watch count: %d", count)
 
 	select {
 	case event := <-ech:
@@ -222,16 +220,16 @@ func (e *Election) watchEvent(ech <-chan zk.Event) {
 		}
 		e.Unlock()
 
-		log.Debug("*******************")
-		log.DebugF("path: %s", event.Path)
-		log.DebugF("type: %s", event.Type.String())
-		log.DebugF("state: %s", event.State.String())
-		log.Debug("*******************")
+		logInstance.Debug("*******************")
+		logInstance.Debug("path: %s", event.Path)
+		logInstance.Debug("type: %s", event.Type.String())
+		logInstance.Debug("state: %s", event.State.String())
+		logInstance.Debug("*******************")
 
 		if event.Type == zk.EventNodeDeleted {
-			log.DebugF("election watch action...")
+			logInstance.Debug("election watch action...")
 			if err := e.election(); err != nil {
-				log.ErrorF("watchElection %s", err.Error())
+				logInstance.Debug("watchElection %s", err.Error())
 			}
 		}
 
@@ -239,5 +237,5 @@ func (e *Election) watchEvent(ech <-chan zk.Event) {
 		e.Stop()
 	}
 
-	log.DebugF("election watchEvent quit, watch count: %d", count)
+	logInstance.Debug("election watchEvent quit, watch count: %d", count)
 }

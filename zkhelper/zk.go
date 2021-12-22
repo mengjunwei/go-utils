@@ -5,6 +5,8 @@ import (
 	"strings"
 
 	"github.com/samuel/go-zookeeper/zk"
+
+	"github.com/mengjunwei/go-utils/logger"
 )
 
 const (
@@ -14,6 +16,14 @@ const (
 
 	sessionTimeout = 15
 )
+
+var (
+	logInstance logger.Logger
+)
+
+func init() {
+	logInstance = logger.NewNonLogger()
+}
 
 //相当于 mkdir -p
 func makePath(path string, zkConn *zk.Conn, flags int32, acl []zk.ACL) (bool, error) {

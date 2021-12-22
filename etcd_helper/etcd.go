@@ -8,7 +8,7 @@ import (
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"go.etcd.io/etcd/clientv3"
 
-	"github.com/mengjunwei/go-utils/log"
+	"github.com/mengjunwei/go-utils/logger"
 )
 
 const (
@@ -21,8 +21,13 @@ const (
 )
 
 var (
-	opt interface{}
+	logInstance logger.Logger
+	opt         interface{}
 )
+
+func init() {
+	logInstance = logger.NewNonLogger()
+}
 
 type Options struct {
 	// Username is a user name for authentication.
@@ -34,6 +39,10 @@ type Options struct {
 
 func SetOption(options *Options) {
 	opt = options
+}
+
+func SetLogger(logger logger.Logger) {
+	logInstance = logger
 }
 
 type Conn struct {
@@ -68,14 +77,6 @@ func NewConn(endpoints []string, ctx context.Context) *Conn {
 
 //注册服务
 func (c *Conn) RegService(key string, val string) error {
-	//resp, err := c.client.Get(context.Background(), key)
-	//if err != nil {
-	//	return err
-	//}
-	//// resp是从指定prefix服务下get回的value，extractAddrs将value内容存到list
-	//if c.existKey(resp, key) {
-	//	panic(fmt.Sprintf("service exist, path:%s", key))
-	//}
 	kv := clientv3.NewKV(c.client)
 	ctx := context.Background()
 	lease := clientv3.NewLease(c.client)
@@ -83,18 +84,18 @@ func (c *Conn) RegService(key string, val string) error {
 	//设置租约过期时间为20秒
 	leaseRes, err := clientv3.NewLease(c.client).Grant(ctx, sessionTimeout)
 	if err != nil {
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		return err
 	}
 	_, err = kv.Put(context.Background(), key, val, clientv3.WithLease(leaseRes.ID)) //把服务的key绑定到租约下面
 	if err != nil {
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		return err
 	}
 	//续租时间大概自动为租约的三分之一时间，context.TODO官方定义为是你不知道要传什么
 	keepaliveRes, err := lease.KeepAlive(context.TODO(), leaseRes.ID)
 	if err != nil {
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		return err
 	}
 	go c.lisKeepAlive(keepaliveRes)
@@ -106,7 +107,7 @@ func (c *Conn) lisKeepAlive(keepaliveRes <-chan *clientv3.LeaseKeepAliveResponse
 		select {
 		case ret := <-keepaliveRes:
 			if ret != nil {
-				log.DebugF("%d 续租成功 %d", ret.ID, time.Now())
+				logInstance.Debug("%d 续租成功 %d", ret.ID, time.Now())
 			}
 		case <-c.ctx.Done():
 			return
@@ -118,7 +119,7 @@ func (c *Conn) lisKeepAlive(keepaliveRes <-chan *clientv3.LeaseKeepAliveResponse
 func (c *Conn) GetService(prefix string) ([]string, error) {
 	resp, err := c.client.Get(context.Background(), prefix, clientv3.WithPrefix())
 	if err != nil {
-		log.Error(err.Error())
+		logInstance.Error(err.Error())
 		return nil, err
 	}
 
@@ -187,14 +188,14 @@ func (c *Conn) SetServiceList(key, val string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	c.serverList[key] = string(val)
-	log.DebugF("set data key :", key, "val:", val)
+	logInstance.Debug("set data key :", key, "val:", val)
 }
 
 func (c *Conn) DelServiceList(key string) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 	delete(c.serverList, key)
-	log.DebugF("del data key:", key)
+	logInstance.Debug("del data key:", key)
 }
 
 func (c *Conn) SetCallBack(cb func([]string), delay int) {
@@ -218,20 +219,20 @@ func (c *Conn) callbackDelayLoop() {
 			now := time.Now().Unix()
 			eventsMap[now] = event
 			timer.Reset(time.Duration(c.cbDelay) * time.Second)
-			log.DebugF("discovery callbackDelayLoop cb will  be call: %v, now:%d, delay:%d s", event, now, c.cbDelay)
+			logInstance.Debug("discovery callbackDelayLoop cb will  be call: %v, now:%d, delay:%d s", event, now, c.cbDelay)
 		case <-timer.C:
 			now := time.Now().Unix()
 			max, event := findMax(eventsMap, now)
 			if now-max >= int64(c.cbDelay) {
 				if c.cb != nil {
-					log.DebugF("cb call now, before: %d", now)
+					logInstance.Debug("cb call now, before: %d", now)
 					c.cb(event)
-					log.DebugF("cb call now, after: %d", now)
+					logInstance.Debug("cb call now, after: %d", now)
 				}
 				eventsMap = make(map[int64][]string)
 			} else {
 				if len(event) != 0 {
-					log.WarnF("discovery find event, but can't exec")
+					logInstance.Warning("discovery find event, but can't exec")
 				}
 			}
 			timer.Reset(time.Duration(c.cbDelay) * time.Second)
@@ -239,7 +240,7 @@ func (c *Conn) callbackDelayLoop() {
 	}
 exit:
 	timer.Stop()
-	log.Debug("watch callback loop quit")
+	logInstance.Debug("watch callback loop quit")
 }
 
 func findMax(maps map[int64][]string, now int64) (int64, []string) {

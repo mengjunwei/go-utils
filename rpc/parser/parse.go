@@ -11,7 +11,6 @@ import (
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/model"
 
-	"github.com/mengjunwei/go-utils/log"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 	"github.com/mengjunwei/go-utils/rpc/parser/expfmt"
 )
@@ -49,8 +48,6 @@ func metricFamiliesForamt(mfs map[string]*dto.MetricFamily, groupLabels map[stri
 		metrics, err := expfmt.MetricFamilyFormat(mf, t, ms.List, p)
 		if err == nil {
 			ms.List = metrics
-		} else {
-			log.ErrorF("MetricFamilyFormat error:%s", err.Error())
 		}
 	}
 	bufferPool.Put(p)

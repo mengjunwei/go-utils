@@ -5,7 +5,6 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/mengjunwei/go-utils/log"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 	"github.com/mengjunwei/go-utils/rpc/parser"
 )
@@ -64,7 +63,7 @@ func (m *SendManager) Run() error {
 	}
 	m.stopped = false
 
-	log.InfoF("SendManager :%s %s run", m.name, m.addr)
+	logInstance.Info("SendManager :%s %s run", m.name, m.addr)
 	return nil
 }
 
@@ -80,7 +79,7 @@ func (m *SendManager) Stop() error {
 	}
 	m.stopped = true
 
-	log.InfoF("SendManager :%s %s stop", m.name, m.addr)
+	logInstance.Info("SendManager :%s %s stop", m.name, m.addr)
 	return nil
 }
 

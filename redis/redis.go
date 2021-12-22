@@ -6,23 +6,31 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 
-	"github.com/mengjunwei/go-utils/log"
+	"github.com/mengjunwei/go-utils/logger"
 )
 
 var Pool *ClientPool
 
+var (
+	logInstance logger.Logger
+)
+
+func init() {
+	logInstance = logger.NewNonLogger()
+}
+
 //connInfo : 127.0.0.1:6379
 func InitPool(connInfo string) error {
-	log.DebugF("redis 地址 :%s", connInfo)
+	logInstance.Debug("redis 地址 :%s", connInfo)
 
 	Pool = &ClientPool{
 		Name: "redis-client-pool",
 	}
 	err := Pool.InitRedis(connInfo)
 	if err != nil {
-		log.ErrorF("redis 初始化失败:", err.Error())
+		logInstance.Error("redis 初始化失败:", err.Error())
 	} else {
-		log.Info("redis 连接OK")
+		logInstance.Info("redis 连接OK")
 	}
 	return err
 }

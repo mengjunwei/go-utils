@@ -7,7 +7,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/mengjunwei/go-utils/log"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
@@ -58,7 +57,7 @@ func (s *Sender) Send(ms *metrics.Metrics) error {
 func (s *Sender) sendLoop() {
 	client, err := NewClient(s.manager, s.seq, s.addr)
 	if err != nil {
-		log.ErrorF(fmt.Sprintf("sender create client error:%s", err.Error()))
+		logInstance.Error(fmt.Sprintf("sender create client error:%s", err.Error()))
 	}
 	defer client.Close()
 
@@ -66,27 +65,27 @@ func (s *Sender) sendLoop() {
 	if len(s.manager.HashAddr) > 0 {
 		hashClient, err = NewHashClient(s.manager, s.seq, s.manager.HashAddr)
 		if err != nil {
-			log.ErrorF("NewHashClient error :%s", err.Error())
+			logInstance.Error("NewHashClient error :%s", err.Error())
 		} else {
 			defer hashClient.Close()
 		}
 	}
 
-	log.InfoF("ds:%s rpc[%s] sender loop seq: %d is runing", s.manager.name, s.addr, s.seq)
+	logInstance.Info("ds:%s rpc[%s] sender loop seq: %d is runing", s.manager.name, s.addr, s.seq)
 	t := time.NewTicker(time.Duration(s.flushInterval) * time.Second)
 	defer t.Stop()
 	for {
 		select {
 		case d, ok := <-s.dataChan:
 			if !ok {
-				log.Debug("send loop quit")
+				logInstance.Debug("send loop quit")
 				return
 			}
 
 			//向judge打一份
 			if d.DefaultToJudge && hashClient != nil {
 				if err := hashClient.Send(d); err != nil {
-					log.ErrorF("hashClient send error :%s", err.Error())
+					logInstance.Error("hashClient send error :%s", err.Error())
 				}
 			}
 
@@ -94,20 +93,20 @@ func (s *Sender) sendLoop() {
 			if len(d.List) > 8 {
 				if err := client.Send(d); err != nil {
 					if s.stopped {
-						log.Debug("send loop quit")
+						logInstance.Debug("send loop quit")
 						return
 					}
-					log.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
+					logInstance.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
 				}
 			} else {
 				s.buff = append(s.buff, d.List...)
 				if len(s.buff) >= batchNumbers {
 					if err := client.Send(&metrics.Metrics{List: s.buff}); err != nil {
 						if s.stopped {
-							log.Debug("send loop quit")
+							logInstance.Debug("send loop quit")
 							return
 						}
-						log.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
+						logInstance.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
 					}
 					s.buff = s.buff[:0]
 				}
@@ -116,14 +115,14 @@ func (s *Sender) sendLoop() {
 		case <-t.C:
 			if len(s.buff) > 0 {
 				if err := client.Send(&metrics.Metrics{List: s.buff}); err != nil {
-					log.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
+					logInstance.Error(fmt.Sprintf("tsdb client write error: %s", err.Error()))
 				}
 				s.buff = s.buff[:0]
 			}
 		}
 	}
 
-	log.InfoF("ds:%s rpc[%s] sender loop seq: %d is quit", s.manager.name, s.addr, s.seq)
+	logInstance.Info("ds:%s rpc[%s] sender loop seq: %d is quit", s.manager.name, s.addr, s.seq)
 }
 
 func (s *Sender) Stop() {
@@ -136,5 +135,5 @@ func (s *Sender) Stop() {
 	s.stopped = true
 	close(s.dataChan)
 
-	log.InfoF("ds:%s rpc[%s] sender loop seq: %d is stop", s.manager.name, s.addr, s.seq)
+	logInstance.Info("ds:%s rpc[%s] sender loop seq: %d is stop", s.manager.name, s.addr, s.seq)
 }

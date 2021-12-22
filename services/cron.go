@@ -6,8 +6,6 @@ import (
 	"hash/crc32"
 	"net"
 	"sync"
-
-	"github.com/mengjunwei/go-utils/log"
 )
 
 type CronService struct {
@@ -63,14 +61,14 @@ func (service *CronService) IsNecessaryExecute(serviceName string) (bool, error)
 
 	service.Seq = int(serviceHash) % len(service.Hosts)
 	localIps, err := service.GetLocalIp()
-	log.InfoF("local IP: %v", localIps)
+	logInstance.Info("local IP: %v", localIps)
 	if err != nil {
 		return false, err
 	}
 
 	for _, ip := range localIps {
 		if ip == service.Hosts[service.Seq] {
-			log.InfoF("sync task name: %s; ip: %s", serviceName, localIps[0])
+			logInstance.Info("sync task name: %s; ip: %s", serviceName, localIps[0])
 			return true, nil
 		}
 	}

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/mengjunwei/go-utils/bytes-util"
-	"github.com/mengjunwei/go-utils/log"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
@@ -52,7 +51,7 @@ func (c *bufferClient) tryToSend(m *metrics.Metric) {
 func (c *bufferClient) send() {
 	ms := &metrics.Metrics{List: c.buf.buf[0:c.buf.size]}
 	if err := c.client.Send(ms); err != nil {
-		log.ErrorF("send to judge error:%s", err.Error())
+		logInstance.Error("send to judge error:%s", err.Error())
 	}
 	c.buf.size = 0
 	c.lastFlushTime = time.Now().Unix()
@@ -96,7 +95,7 @@ func NewHashClient(manager *SendManager, seq int, hashAddrs []string) (*HashClie
 	}
 
 	go hc.sendLoop()
-	log.InfoF("ds:%s hash client %d create, hash addr: %v", manager.name, seq, hashAddrs)
+	logInstance.Info("ds:%s hash client %d create, hash addr: %v", manager.name, seq, hashAddrs)
 	return hc, nil
 }
 
@@ -118,7 +117,7 @@ func (hc *HashClient) sendLoop() error {
 		select {
 		case ms, ok := <-hc.dataChan:
 			if !ok {
-				log.Debug("send loop quit")
+				logInstance.Debug("send loop quit")
 				return nil
 			}
 
@@ -133,7 +132,7 @@ func (hc *HashClient) sendLoop() error {
 		}
 	}
 
-	log.InfoF("ds:%s hash client %d quit, hash addr: %v", hc.manager.name, hc.seq, hc.addrs)
+	logInstance.Info("ds:%s hash client %d quit, hash addr: %v", hc.manager.name, hc.seq, hc.addrs)
 	return nil
 }
 

@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/ylywyn/restclient"
-
-	"github.com/mengjunwei/go-utils/log"
 )
 
 const ServiceSync = "SyncService"
@@ -76,7 +74,7 @@ func (s *SyncService) AddTask(t *SyncTask) {
 	//已经启动了
 	if !s.stopped {
 		if err := s.syncLoop(false, t); err != nil {
-			log.ErrorF("sync service task: %s error: %s", t.Name, err.Error())
+			logInstance.Error("sync service task: %s error: %s", t.Name, err.Error())
 		}
 		go s.syncLoop(true, t)
 	}
@@ -95,7 +93,7 @@ func (s *SyncService) Run(ctx context.Context) error {
 	for _, task := range s.tasks {
 		//先同步一把数据，使在程序完全启动前， 保证是有数据的
 		if err := s.syncLoop(false, task); err != nil {
-			log.ErrorF("sync service task: %s error: %s", task.Name, err.Error())
+			logInstance.Error("sync service task: %s error: %s", task.Name, err.Error())
 		}
 		go s.syncLoop(true, task)
 	}
@@ -125,12 +123,12 @@ func (s *SyncService) syncLoop(loop bool, t *SyncTask) error {
 	syncFun := func() error {
 		resp, err := s.syncAll(t)
 		if err != nil {
-			log.Error(err.Error())
+			logInstance.Error(err.Error())
 			return err
 		}
 
 		if resp == nil || len(resp.Data) == 0 {
-			log.DebugF("sync service task: %s sync item 0", t.Name)
+			logInstance.Debug("sync service task: %s sync item 0", t.Name)
 			return nil
 		}
 
@@ -138,7 +136,7 @@ func (s *SyncService) syncLoop(loop bool, t *SyncTask) error {
 			t.SyncCallBackFun(t, resp.Data)
 		}
 		t.Version = resp.Timestamp
-		log.InfoF("sync service task: %s  count: %d, version: %d", t.Name, len(resp.Data), t.Version)
+		logInstance.Info("sync service task: %s  count: %d, version: %d", t.Name, len(resp.Data), t.Version)
 		return nil
 	}
 
@@ -146,15 +144,15 @@ func (s *SyncService) syncLoop(loop bool, t *SyncTask) error {
 		return syncFun()
 	}
 
-	log.InfoF("sync service task: %s  loop run, interval:%d", t.Name, interval)
+	logInstance.Info("sync service task: %s  loop run, interval:%d", t.Name, interval)
 	for {
 		select {
 		case <-ticker.C:
 		case <-s.graceShut:
-			log.InfoF("sync service task: %s  loop quit", t.Name)
+			logInstance.Info("sync service task: %s  loop quit", t.Name)
 			return nil
 		case <-s.ctx.Done():
-			log.InfoF("sync service task: %s  loop quit", t.Name)
+			logInstance.Info("sync service task: %s  loop quit", t.Name)
 			return nil
 		}
 

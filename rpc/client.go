@@ -8,7 +8,6 @@ import (
 
 	"github.com/apache/thrift/lib/go/thrift"
 
-	"github.com/mengjunwei/go-utils/log"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
 
@@ -66,7 +65,7 @@ func (c *Client) Send(ms *metrics.Metrics) error {
 
 	if err != nil {
 		c.errCount++
-		log.ErrorF("ds:%s rpc clent send error:%s", c.manager.name, err.Error())
+		logInstance.Error("ds:%s rpc clent send error:%s", c.manager.name, err.Error())
 	} else {
 		c.errCount = 0
 		//log.Debugf("rpc clent %d send metrics ok: %d", c.seq, len(ms.List))
@@ -77,7 +76,7 @@ func (c *Client) Send(ms *metrics.Metrics) error {
 }
 
 func (c *Client) reConnLoop() {
-	log.InfoF("ds:%s rpc cleint start reConnLoop: %s seq:%d", c.manager.name, c.addr, c.seq)
+	logInstance.Info("ds:%s rpc cleint start reConnLoop: %s seq:%d", c.manager.name, c.addr, c.seq)
 	atomic.AddInt32(&c.reConnFlag, 1)
 
 	go func() {
@@ -90,7 +89,7 @@ func (c *Client) reConnLoop() {
 			err := c.conn()
 			if c.client == nil {
 				if err != nil {
-					log.Error(err.Error())
+					logInstance.Error(err.Error())
 				}
 				time.Sleep(timeOut)
 				continue
@@ -122,6 +121,6 @@ func (c *Client) conn() error {
 	c.client = client
 	c.transport = transport
 
-	log.InfoF("ds:%s rpc clent connect to  %s  seq:%d ok", c.manager.name, c.addr, c.seq)
+	logInstance.Info("ds:%s rpc clent connect to  %s  seq:%d ok", c.manager.name, c.addr, c.seq)
 	return nil
 }

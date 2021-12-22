@@ -2,11 +2,20 @@ package rpc
 
 import (
 	"github.com/apache/thrift/lib/go/thrift"
+
 	"github.com/pkg/errors"
 
-	"github.com/mengjunwei/go-utils/log"
+	"github.com/mengjunwei/go-utils/logger"
 	"github.com/mengjunwei/go-utils/rpc/gen-go/metrics"
 )
+
+var (
+	logInstance logger.Logger
+)
+
+func init() {
+	logInstance = logger.NewNonLogger()
+}
 
 type MetricsRpcServer struct {
 	addr   string
@@ -36,7 +45,7 @@ func (s *MetricsRpcServer) Run(handler MetricsTransferHandler) error {
 		protocolFactory,
 	)
 
-	log.InfoF("MetricsRpcServer Serve:%s", s.addr)
+	logInstance.Info("MetricsRpcServer Serve:%s", s.addr)
 	if err := s.server.Serve(); err != nil {
 		return errors.Wrapf(err, "server.Serve()")
 	}
@@ -49,7 +58,7 @@ func (s *MetricsRpcServer) Stop() error {
 		s.server.Stop()
 		s.server = nil
 
-		log.Info("MetricsRpcServer Stop")
+		logInstance.Info("MetricsRpcServer Stop")
 	}
 
 	return nil
