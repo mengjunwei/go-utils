@@ -19,6 +19,10 @@ func init() {
 	logInstance = logger.NewNonLogger()
 }
 
+func SetLogger(logger logger.Logger) {
+	logInstance = logger
+}
+
 //connInfo : 127.0.0.1:6379
 func InitPool(connInfo string) error {
 	logInstance.Debug("redis 地址 :%s", connInfo)

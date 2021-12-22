@@ -21,6 +21,10 @@ func init() {
 	logInstance = logger.NewNonLogger()
 }
 
+func SetLogger(logger logger.Logger) {
+	logInstance = logger
+}
+
 type Service interface {
 	Init() error
 }

@@ -25,6 +25,10 @@ func init() {
 	logInstance = logger.NewNonLogger()
 }
 
+func SetLogger(logger logger.Logger) {
+	logInstance = logger
+}
+
 //相当于 mkdir -p
 func makePath(path string, zkConn *zk.Conn, flags int32, acl []zk.ACL) (bool, error) {
 	exists, _, err := zkConn.Exists(path)

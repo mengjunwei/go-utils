@@ -17,6 +17,10 @@ func init() {
 	logInstance = logger.NewNonLogger()
 }
 
+func SetLogger(logger logger.Logger) {
+	logInstance = logger
+}
+
 type MetricsRpcServer struct {
 	addr   string
 	server *thrift.TSimpleServer
