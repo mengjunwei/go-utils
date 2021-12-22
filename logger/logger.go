@@ -13,31 +13,53 @@ type Logger interface {
 	Critical(f interface{}, v ...interface{})
 }
 
-func NewNonLogger() Logger {
-	return &NonLogger{}
-}
-
 type NonLogger struct {
 }
 
 func (l *NonLogger) Warning(f interface{}, v ...interface{}) {
-	fmt.Println(formatLog(f, v...))
 }
 
 func (l *NonLogger) Debug(f interface{}, v ...interface{}) {
-	fmt.Println(formatLog(f, v...))
 }
 
 func (l *NonLogger) Error(f interface{}, v ...interface{}) {
-	fmt.Println(formatLog(f, v...))
 }
 
 func (l *NonLogger) Info(f interface{}, v ...interface{}) {
-	fmt.Println(formatLog(f, v...))
 }
 
 func (l *NonLogger) Critical(f interface{}, v ...interface{}) {
+}
+
+func NewNonLogger() Logger {
+	return &NonLogger{}
+}
+
+type StdLogger struct {
+}
+
+func (l *StdLogger) Warning(f interface{}, v ...interface{}) {
 	fmt.Println(formatLog(f, v...))
+}
+
+func (l *StdLogger) Debug(f interface{}, v ...interface{}) {
+	fmt.Println(formatLog(f, v...))
+}
+
+func (l *StdLogger) Error(f interface{}, v ...interface{}) {
+	fmt.Println(formatLog(f, v...))
+}
+
+func (l *StdLogger) Info(f interface{}, v ...interface{}) {
+	fmt.Println(formatLog(f, v...))
+}
+
+func (l *StdLogger) Critical(f interface{}, v ...interface{}) {
+	fmt.Println(formatLog(f, v...))
+}
+
+func NewStdLogger() Logger {
+	return &NonLogger{}
 }
 
 func formatLog(f interface{}, v ...interface{}) string {
